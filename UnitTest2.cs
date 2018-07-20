@@ -3,9 +3,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace EfJsonTest {
 
@@ -17,11 +15,7 @@ namespace EfJsonTest {
     public class MyComplexType2 : ICustomValue<MyComplexType2> {
         public string Field { get; set; }
         public bool Equals(MyComplexType2 obj) {
-            if (obj is MyComplexType2 t) {
-                return (Field == t.Field);
-            } else {
-                return false;
-            }
+            return Field == obj.Field;
         }
         public override int GetHashCode() {
             return Field.GetHashCode();
@@ -79,6 +73,9 @@ namespace EfJsonTest {
                 var entity = new MyEntity2 { Complex = new MyComplexType2 { Field = "Value 1"}};
                 db.Add(entity);
                 db.SaveChanges();
+
+                //db.Entry(entity).State = EntityState.Detached;
+                //entity = db.MyEntities.Find(entity.Id);
 
                 entity.Complex.Field = "Value 2";
                 //entity.Complex = new MyComplexType2 { Field = "Value 2"}; // With this it works

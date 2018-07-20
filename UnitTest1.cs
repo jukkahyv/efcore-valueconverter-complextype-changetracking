@@ -20,6 +20,7 @@ namespace EfJsonTest {
     }
     public class MyEntity {
         public int Id { get; set; }
+        public string Simple { get; set; }
         public MyComplexType Complex { get; set; }
     }
 
@@ -51,9 +52,14 @@ namespace EfJsonTest {
                 var entity = new MyEntity { Complex = new MyComplexType { Field = "Value 1"}};
                 db.Add(entity);
                 db.SaveChanges();
-                db.ChangeTracker.DetectChanges(); // Just in case
+
+                //db.Entry(entity).State = EntityState.Detached;
+                //entity = db.MyEntities.Find(entity.Id);
 
                 entity.Complex.Field = "Value 2";
+
+                db.ChangeTracker.DetectChanges(); // Just in case
+
                 Assert.IsTrue(db.Entry(entity).Property(p => p.Complex).IsModified, "Property is modified"); // This fails
                 Assert.AreEqual(EntityState.Modified, db.Entry(entity).State, "Entity is modified"); // This also fails
 
