@@ -49,12 +49,12 @@ namespace EfJsonTest {
 
             using (var db = new TestDbContext()) {
 
-                var entity = new MyEntity { Complex = new MyComplexType { Field = "Value 1"}};
+                var entity = new MyEntity { Complex = new MyComplexType { Field = "Value 1 "}};
                 db.Add(entity);
                 db.SaveChanges();
 
-                //db.Entry(entity).State = EntityState.Detached;
-                //entity = db.MyEntities.Find(entity.Id);
+                db.Entry(entity).State = EntityState.Detached;
+                entity = db.MyEntities.Find(entity.Id);
 
                 entity.Complex.Field = "Value 2";
 

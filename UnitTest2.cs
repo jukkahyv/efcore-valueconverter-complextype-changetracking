@@ -74,11 +74,12 @@ namespace EfJsonTest {
                 db.Add(entity);
                 db.SaveChanges();
 
+                // Works with these
                 //db.Entry(entity).State = EntityState.Detached;
                 //entity = db.MyEntities.Find(entity.Id);
 
                 entity.Complex.Field = "Value 2";
-                //entity.Complex = new MyComplexType2 { Field = "Value 2"}; // With this it works
+                //entity.Complex = new MyComplexType2 { Field = "Value 2"}; // With this it works as well
                 db.ChangeTracker.DetectChanges(); // Just in case
 
                 Assert.IsTrue(db.Entry(entity).Property(p => p.Complex).IsModified, "Property is modified"); // This fails
