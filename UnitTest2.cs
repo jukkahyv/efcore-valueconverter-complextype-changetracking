@@ -56,6 +56,7 @@ namespace EfJsonTest {
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             base.OnConfiguring(optionsBuilder);
+            //optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=efcore-jsontest;Integrated Security=True;MultipleActiveResultSets=True");
             optionsBuilder.UseInMemoryDatabase("Test");
         }
 
@@ -73,12 +74,15 @@ namespace EfJsonTest {
 
             using (var db = new TestDbContext2()) {
 
-                var entity = new MyEntity2 { Complex = new MyComplexType2 { Field = "Value 1 "}};
+                db.Database.EnsureCreated();
+
+                var entity = new MyEntity2 { Complex = new MyComplexType2 { Field = "Value 1"}};
                 db.Add(entity);
                 db.SaveChanges();
 
                 entity.Complex.Field = "Value 2";
                 db.ChangeTracker.DetectChanges(); // Just in case
+                //db.SaveChanges();
 
                 Assert.IsTrue(db.Entry(entity).Property(p => p.Complex).IsModified, "Property is modified"); // This fails
                 Assert.AreEqual(EntityState.Modified, db.Entry(entity).State, "Entity is modified"); // This also fails
