@@ -81,8 +81,8 @@ namespace EfJsonTest {
                 db.SaveChanges();
 
                 entity.Complex.Field = "Value 2";
+                //entity.Complex = new MyComplexType2 { Field = "Value 2"}; // With this it works
                 db.ChangeTracker.DetectChanges(); // Just in case
-                //db.SaveChanges();
 
                 Assert.IsTrue(db.Entry(entity).Property(p => p.Complex).IsModified, "Property is modified"); // This fails
                 Assert.AreEqual(EntityState.Modified, db.Entry(entity).State, "Entity is modified"); // This also fails
