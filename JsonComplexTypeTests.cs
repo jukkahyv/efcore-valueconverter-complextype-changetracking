@@ -39,6 +39,7 @@ namespace EfJsonTest {
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
                 base.OnConfiguring(optionsBuilder);
                 optionsBuilder.UseInMemoryDatabase("Test");
+                //optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=efcore-jsontest2;Integrated Security=True;MultipleActiveResultSets=True");
             }
 
             protected override void OnModelCreating(ModelBuilder modelBuilder) {
@@ -67,6 +68,13 @@ namespace EfJsonTest {
             Assert.IsTrue(db.Entry(customer).Property(m => m.Address).IsModified, "Address is modified");
         }
 
+        public JsonComplexTypeTests() {
+            db.Database.EnsureCreated();
+        }
+
+        /// <summary>
+        /// PASSES
+        /// </summary>
         [TestMethod]
         public void PlainField() {
 
@@ -79,6 +87,9 @@ namespace EfJsonTest {
 
         }
 
+        /// <summary>
+        /// FAILS
+        /// </summary>
         [TestMethod]
         public void ComplexField_WithoutReload() {
 
@@ -92,6 +103,9 @@ namespace EfJsonTest {
 
         }
         
+        /// <summary>
+        /// PASSES
+        /// </summary>
         [TestMethod]
         public void ComplexField_WithReload() {
 
@@ -108,6 +122,32 @@ namespace EfJsonTest {
 
         }
 
+        /// <summary>
+        /// FAILS
+        /// </summary>
+        [TestMethod]
+        public void ComplexField_WithReloadAndModify() {
+
+            var customer = new Customer { Address = new Address { Street = "Street" } };
+            db.Add(customer);
+            db.SaveChanges();
+
+            db.Entry(customer).State = EntityState.Detached;
+            customer = db.Customers.Find(customer.Id);
+
+            customer.Address.Street = "Updated";
+            db.SaveChanges();
+
+            customer.Address.Street = "Updated 2";
+
+            AssertModified(customer);
+            AssertAddressModified(customer);
+
+        }
+
+        /// <summary>
+        /// PASSES
+        /// </summary>
         [TestMethod]
         public void ComplexField_WithAssign() {
 
