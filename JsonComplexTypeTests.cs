@@ -17,7 +17,7 @@ namespace EfJsonTest {
             }
 
             public override int GetHashCode() {
-                return Street.GetHashCode();
+                return Street?.GetHashCode() ?? 0;
             }
 
             public Address Clone() {
